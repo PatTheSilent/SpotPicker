@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  spot-picker:
+    build: .
+    links:
+      - influxdb
+      - elasticsearch
+    environment:
+      INFLUXDB_HOST: influxdb
+      INFLUXDB_DB: spots
+      INFLUXDB_USER: spots
+      INFLUXDB_USER_PASSWORD: spots
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: 9200
+      ELASTICSEARCH_INDEX: spot-picker
+      AWS_PROFILE: "${AWS_PROFILE}"
+      AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
+    volumes:
+      - ~/.aws:/root/.aws
+  influxdb:
+    image: influxdb
+    environment:
+      INFLUXDB_DB: spots
+      INFLUXDB_USER: spots
+      INFLUXDB_USER_PASSWORD: spots
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
